@@ -12,6 +12,7 @@ import android.widget.*;
 import com.taobao.api.internal.util.WebUtils;
 import com.taobao.tae.Mshopping.demo.R;
 import com.taobao.tae.Mshopping.demo.activity.ItemDetailActivity;
+import com.taobao.tae.Mshopping.demo.config.AppConfig;
 import com.taobao.tae.Mshopping.demo.constant.Constants;
 import com.taobao.tae.Mshopping.demo.model.*;
 import com.taobao.tae.Mshopping.demo.util.Helper;
@@ -134,14 +135,14 @@ public class GetItemRichDetailTask extends AsyncTask<String, Integer, TaobaoItem
                 int timeout = 30000;
                 Map param = new HashMap<String, String>();
                 param.put("securityKey", SecurityKey.getKey());
-                String itemBasicInfoUrl = Constants.SERVER_DOMAIN + "/api/item/basicinfo/" + itemId;
-                String itemRichInfoUrl = Constants.SERVER_DOMAIN + "/api/item/picwordinfo/" + itemId;
+                String itemBasicInfoUrl = AppConfig.getInstance().getServer() + "/api/item/basicinfo/" + itemId;
+                String itemRichInfoUrl = AppConfig.getInstance().getServer() + "/api/item/picwordinfo/" + itemId;
                 itemBasicJson = WebUtils.doPost(itemBasicInfoUrl, param, timeout, timeout);
                 itemRichJson = WebUtils.doPost(itemRichInfoUrl, param, timeout, timeout);
             } catch (IOException e) {
-                Log.e("IOException is : ", e.toString());
+                Log.e("IOException is : ", e.toString(), e);
                 e.printStackTrace();
-                return null;
+                return taobaoItemRichInfo;
             }
         }
         try {

@@ -11,9 +11,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 import com.taobao.tae.Mshopping.demo.R;
+import com.taobao.tae.Mshopping.demo.constant.Constants;
+import com.taobao.tae.Mshopping.demo.constant.UmengAnalysis;
 import com.taobao.tae.Mshopping.demo.model.CreateOrderResp;
 import com.taobao.tae.Mshopping.demo.task.GetPayOrderUrlTask;
-import com.taobao.tae.Mshopping.demo.util.NetWorkStateUtil;
+import com.umeng.analytics.MobclickAgent;
 
 public class PayOrderActivity extends BaseActivity {
 
@@ -23,12 +25,6 @@ public class PayOrderActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.pay_order_activity);
-
-        if (!NetWorkStateUtil.isConnected(this)) {
-            finish();
-            toast("请检查网络连接");
-            return;
-        }
 
         CreateOrderResp createOrderResp = (CreateOrderResp) getIntent().getSerializableExtra("createOrderResp");
         if (createOrderResp == null) {
@@ -81,6 +77,7 @@ public class PayOrderActivity extends BaseActivity {
                 finish();
             }
         });
+        MobclickAgent.setDebugMode(UmengAnalysis.isOpenAnalyticsDebug);
     }
 
 

@@ -13,10 +13,13 @@ import com.taobao.api.internal.util.WebUtils;
 import com.taobao.tae.Mshopping.demo.MshoppingApplication;
 import com.taobao.tae.Mshopping.demo.R;
 import com.taobao.tae.Mshopping.demo.activity.ConfirmOrderActivity;
+import com.taobao.tae.Mshopping.demo.config.AppConfig;
 import com.taobao.tae.Mshopping.demo.constant.Constants;
-import com.taobao.tae.Mshopping.demo.login.auth.AccessToken;
+import com.taobao.tae.Mshopping.demo.login.LoginType;
+import com.taobao.tae.Mshopping.demo.login.User;
+import com.taobao.tae.Mshopping.demo.login.taobao.AccessToken;
+import com.taobao.tae.Mshopping.demo.login.taobao.TaobaoUser;
 import com.taobao.tae.Mshopping.demo.model.*;
-import com.taobao.tae.Mshopping.demo.util.RemoteImageHelper;
 import com.taobao.tae.Mshopping.demo.util.SecurityKey;
 import org.json.JSONObject;
 
@@ -49,7 +52,10 @@ public class UpdateOrderTask extends AsyncTask<String, Integer, Boolean> {
     public UpdateOrderTask(Context context, ArrayList<ItemModel> itemModels, RelativeLayout confirmOrdcerLayoutView, ConfirmOrderActivity confirmOrderActivity) {
         super();
         this.context = context;
-        this.accessToken = ((MshoppingApplication) context).getAccessToken();
+        User user = ((MshoppingApplication) context).getUser();
+        if(((MshoppingApplication) context).getLoginType() == LoginType.TAOBAO.getType()){
+            this.accessToken = ((TaobaoUser)user).getAccessToken();
+        }
         this.itemModels = itemModels;
         this.confirmOrdcerLayoutView = confirmOrdcerLayoutView;
         this.confirmOrderActivity = confirmOrderActivity;
@@ -85,7 +91,7 @@ public class UpdateOrderTask extends AsyncTask<String, Integer, Boolean> {
      */
     public String getUpdateOrderResult() throws IOException {
         String result = "";
-        String buildOrderUrl = Constants.SERVER_DOMAIN + "/api/order/updateorder";
+        String buildOrderUrl = AppConfig.getInstance().getServer() + "/api/order/updateorder";
         int timeout = 30000;
         Map param = new HashMap<String, String>();
         param.put("securityKey", SecurityKey.getKey());
@@ -109,6 +115,7 @@ public class UpdateOrderTask extends AsyncTask<String, Integer, Boolean> {
     public Boolean parseUpdateOrderJSON(String json) throws IOException {
         Boolean result = false;
         try {
+            JSONObject jsonObject = new JSONObject(json);
 
         } catch (Exception e) {
             Log.e("IOException is : ", e.toString());
@@ -140,7 +147,7 @@ public class UpdateOrderTask extends AsyncTask<String, Integer, Boolean> {
         if (itemOrderModel.getItemPay() != null) {
             TextView promotionTextView = (TextView) confirmOrdcerLayoutView.findViewById(R.id.confirm_order_promotion);
             String promotionPrice = itemOrderModel.getItemPromotion().getQuark();
-            if (promotionPrice == null || "".equals(promotionPrice)) {
+            if (promotionPrice == null || promotionPrice == "") {
                 promotionPrice = "0.00";
             }
             if (promotionPrice.startsWith("-")) {

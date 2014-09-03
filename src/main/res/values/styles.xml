@@ -47,11 +47,9 @@
         <item name="android:windowExitAnimation">@anim/slide_out_to_bottom</item>
     </style>
 
-    <style name="dialog" parent="android:style/Theme.Dialog">
-        <item name="android:background">#00000000</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
+    <style name="login_animation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_to_bottom</item>
     </style>
 
 </resources>

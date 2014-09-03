@@ -9,9 +9,16 @@
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_item_detail">ItemDetailActivity</string>
     <string name="title_activity_confirm_order">ConfirmOrderActivity</string>
-    <string name="title_activity_personal">PersonalActivity</string>
+    <string name="title_activity_my">MyActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_taobao_login">TaobaoOAuthLoginActivity</string>
+    <string name="title_activity_qq_login">QQOAuthLoginActivity</string>
+    <string name="title_activity_weibo_login">WeiboOAuthLoginActivity</string>
+
     <string name="title_activity_pay_order">PayOrderActivity</string>
     <string name="title_activity_setting">SettingActivity</string>
+
+    <string name="title_image_upload_main">PicMainActivity</string>
 
     <string name="title_cart">购物车</string>
     <string name="title_category">分类</string>
@@ -33,5 +40,9 @@
     <string name="xlistview_footer_hint_ready">松开载入更多</string>
 
     <string name="login_expired_relogin" >您取消的订单过多，请稍后再试</string>
+
+
+    <string name="config_properties_file">config.json</string>
+
 
 </resources>

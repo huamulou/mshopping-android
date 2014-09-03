@@ -55,7 +55,7 @@ public class SkuSelect implements Serializable {
             SkuPropertySelect skuPropertySelect = (SkuPropertySelect) entry.getValue();
             result = result + "; " + skuPropertySelect.getPropName() + ":" + skuPropertySelect.getSkuName();
         }
-        result = result.trim();
+        result.trim();
         if (result.startsWith(";")) {
             result = result.substring(1, result.length());
         }
@@ -94,6 +94,10 @@ public class SkuSelect implements Serializable {
         skuPropertySelect.setPropName(propName);
         skuPropertySelect.setSelected(false);
         this.skuSelectMap.put(propId, skuPropertySelect);
+    }
+
+    public void remove(Long propId) {
+        this.skuSelectMap.remove(propId.toString());
     }
 
     public void setSelectedSkuId(Long propId, Long skuId, String skuName) {

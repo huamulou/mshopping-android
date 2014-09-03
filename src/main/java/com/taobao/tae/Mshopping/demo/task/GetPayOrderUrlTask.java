@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.taobao.api.internal.util.WebUtils;
 import com.taobao.tae.Mshopping.demo.R;
+import com.taobao.tae.Mshopping.demo.config.AppConfig;
 import com.taobao.tae.Mshopping.demo.constant.Constants;
 import com.taobao.tae.Mshopping.demo.model.CreateOrderResp;
 import com.taobao.tae.Mshopping.demo.util.SecurityKey;
@@ -46,10 +47,6 @@ public class GetPayOrderUrlTask extends AsyncTask<String, Integer, String> {
     protected String doInBackground(String... params) {
         try {
             String json = getAlipayOrderUrlResult();
-            if (json == null) {
-                toast("跳转付款页面失败");
-                return null;
-            }
             return parsePayOrderUrlJSON(json);
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,7 +60,7 @@ public class GetPayOrderUrlTask extends AsyncTask<String, Integer, String> {
         if (url != null) {
             webView.loadUrl(url);
         } else {
-            toast("跳转付款页面失败");
+            toast("跳转支付宝失败");
         }
     }
 
@@ -74,8 +71,8 @@ public class GetPayOrderUrlTask extends AsyncTask<String, Integer, String> {
      * @throws java.io.IOException
      */
     public String getAlipayOrderUrlResult() throws IOException {
-        String result = null;
-        String payOrderUrl = Constants.SERVER_DOMAIN + "/api/order/getpayurl";
+        String result = "";
+        String payOrderUrl = AppConfig.getInstance().getServer() + "/api/order/getpayurl";
         int timeout = 30000;
         Map param = new HashMap<String, String>();
         param.put("securityKey", SecurityKey.getKey());

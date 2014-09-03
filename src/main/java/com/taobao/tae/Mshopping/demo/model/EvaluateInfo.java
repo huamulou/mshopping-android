@@ -44,9 +44,9 @@ public class EvaluateInfo  implements Serializable {
     }
 
     public class SingleEvaluateInfo implements Serializable{
-        private String title;
-        private String score;
-        private String highGap;
+        public String title;
+        public String score;
+        public String highGap;
 
         public SingleEvaluateInfo(String title) {
             this.title = title;

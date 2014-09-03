@@ -7,11 +7,11 @@ import java.io.Serializable;
  */
 public class ItemModel implements Serializable {
     //商品ID
-    private Long itemId;
+    public Long itemId;
     //商品数量
-    private Integer quantity;
+    public Integer quantity;
     //商品SKU组合后的 id
-    private Long skuId;
+    public Long skuId;
 
     public Long getItemId() {
         return itemId;

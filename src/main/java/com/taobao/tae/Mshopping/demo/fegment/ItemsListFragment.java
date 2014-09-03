@@ -6,16 +6,23 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.taobao.tae.Mshopping.demo.R;
 import com.taobao.tae.Mshopping.demo.activity.ItemDetailActivity;
+import com.taobao.tae.Mshopping.demo.activity.ItemDetailWebView;
 import com.taobao.tae.Mshopping.demo.adapter.StaggeredAdapter;
-import com.taobao.tae.Mshopping.demo.image.ImageFetcher;
+import com.taobao.tae.Mshopping.demo.config.AppConfig;
 import com.taobao.tae.Mshopping.demo.constant.Constants;
+import com.taobao.tae.Mshopping.demo.image.ImageFetcher;
 import com.taobao.tae.Mshopping.demo.model.TaobaoItemBasicInfo;
 import com.taobao.tae.Mshopping.demo.task.ItemContentTask;
 import com.taobao.tae.Mshopping.demo.view.RefreshableListView;
 import com.taobao.tae.Mshopping.demo.view.pinterest.PinterestAdapterView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.Date;
 
@@ -32,7 +39,6 @@ public class ItemsListFragment extends Fragment implements RefreshableListView.I
     private ItemContentTask task = null;
     private FragmentManager fragmentManager;
     private Boolean onPause = false;
-
 
     private String categoryId;
     private String defaultCategoryId = Constants.NEW_CATEGORY;
@@ -80,14 +86,26 @@ public class ItemsListFragment extends Fragment implements RefreshableListView.I
             public void onItemClick(PinterestAdapterView<?> parent, View view,
                                     int position, long id) {
                 RefreshableListView gv = (RefreshableListView) parent;
+
                 TaobaoItemBasicInfo taobaoItemBasicInfo = (TaobaoItemBasicInfo) gv.getItemAtPosition(position);
-                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("itemId", taobaoItemBasicInfo.getItemId().toString());
-                bundle.putInt("ACTIVITY_NAME_KEY", R.string.title_activity_index);
-                intent.putExtras(bundle);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
+                if (Constants.NEW_CATEGORY.equals(categoryId)) {
+
+                    Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("itemId", taobaoItemBasicInfo.getItemId().toString());
+                    bundle.putInt("ACTIVITY_NAME_KEY", R.string.title_activity_index);
+                    intent.putExtras(bundle);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                } else {
+
+                    Intent intent = new Intent(getActivity(), ItemDetailWebView.class);
+
+                    intent.putExtra("itemId", taobaoItemBasicInfo.getItemId().toString());
+                    startActivity(intent);
+
+
+                }
             }
 
         });
@@ -100,17 +118,17 @@ public class ItemsListFragment extends Fragment implements RefreshableListView.I
      * @param type
      */
     private void addItemToContainer(int pageindex, int type) {
-        if (task != null && task.getStatus() != AsyncTask.Status.RUNNING) {
+        if (task.getStatus() != AsyncTask.Status.RUNNING) {
             String url = "";
             if (type == Constants.PULL_REFRESH_ACTION) {
                 if (lastPushedItemsTime == null) {
-                    url = Constants.SERVER_DOMAIN.concat("/api/itemlist/new/" + categoryId + "/0");
+                    url = AppConfig.getInstance().getServer().concat("/api/itemlist/new/" + categoryId + "/0");
                 } else {
-                    url = Constants.SERVER_DOMAIN.concat("/api/itemlist/new/" + categoryId + "/" + lastPushedItemsTime.getTime());
+                    url = AppConfig.getInstance().getServer().concat("/api/itemlist/new/" + categoryId + "/" + lastPushedItemsTime.getTime());
                 }
             }
             if (type == Constants.VIEW_MORE_ITEMS_ACTION) {
-                url = Constants.SERVER_DOMAIN.concat("/api/itemlist/more/" + categoryId + "/" + pageindex);
+                url = AppConfig.getInstance().getServer().concat("/api/itemlist/more/" + categoryId + "/" + pageindex);
             }
             if (type == Constants.OTHER_ACTION) {
                 return;
@@ -128,6 +146,7 @@ public class ItemsListFragment extends Fragment implements RefreshableListView.I
     @Override
     public void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("Index-Activity-Fregment-" + categoryId); //统计页面
         imageFetcher.setExitTasksEarly(false);
         if (!onPause) {
             refreshableListView.setAdapter(staggeredAdapter);
@@ -139,6 +158,7 @@ public class ItemsListFragment extends Fragment implements RefreshableListView.I
     @Override
     public void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("Index-Activity-Fregment-" + categoryId);
         onPause = true;
     }
 

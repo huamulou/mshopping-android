@@ -16,8 +16,12 @@ import com.taobao.tae.Mshopping.demo.MshoppingApplication;
 import com.taobao.tae.Mshopping.demo.R;
 import com.taobao.tae.Mshopping.demo.activity.ConfirmOrderActivity;
 import com.taobao.tae.Mshopping.demo.activity.ItemDetailActivity;
+import com.taobao.tae.Mshopping.demo.config.AppConfig;
 import com.taobao.tae.Mshopping.demo.constant.Constants;
-import com.taobao.tae.Mshopping.demo.login.auth.AccessToken;
+import com.taobao.tae.Mshopping.demo.login.LoginType;
+import com.taobao.tae.Mshopping.demo.login.User;
+import com.taobao.tae.Mshopping.demo.login.taobao.AccessToken;
+import com.taobao.tae.Mshopping.demo.login.taobao.TaobaoUser;
 import com.taobao.tae.Mshopping.demo.model.*;
 import com.taobao.tae.Mshopping.demo.util.RemoteImageHelper;
 import com.taobao.tae.Mshopping.demo.util.SecurityKey;
@@ -50,7 +54,10 @@ public class BuildOrderTask extends AsyncTask<String, Integer, Boolean> {
     public BuildOrderTask(Context context, ArrayList<ItemModel> itemModels, RelativeLayout confirmOrdcerLayoutView, ConfirmOrderActivity confirmOrderActivity) {
         super();
         this.context = context;
-        this.accessToken = ((MshoppingApplication) context).getAccessToken();
+        User user = ((MshoppingApplication) context).getUser();
+        if(((MshoppingApplication) context).getLoginType() == LoginType.TAOBAO.getType()){
+            this.accessToken = ((TaobaoUser)user).getAccessToken();
+        }
         this.itemModels = itemModels;
         this.confirmOrdcerLayoutView = confirmOrdcerLayoutView;
         this.confirmOrderActivity = confirmOrderActivity;
@@ -60,10 +67,6 @@ public class BuildOrderTask extends AsyncTask<String, Integer, Boolean> {
     protected Boolean doInBackground(String... params) {
         try {
             String json = getBuildOrderResult();
-            if(json == null){
-                errorMessage = "订单创建超时";
-                return false;
-            }
             return parseBuildOrderJSON(json);
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +81,7 @@ public class BuildOrderTask extends AsyncTask<String, Integer, Boolean> {
             initView();
         } else {
             int fromActivity = confirmOrderActivity.getIntent().getIntExtra("ACTIVITY_NAME_KEY", 0);
-            if (fromActivity == R.string.title_activity_personal) {
+            if (fromActivity == R.string.title_activity_login) {
                 //来自 淘宝登录后的跳转，则直接返回商品详情页，而不是上一级
                 Intent intent = new Intent(confirmOrderActivity, ItemDetailActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -98,8 +101,8 @@ public class BuildOrderTask extends AsyncTask<String, Integer, Boolean> {
      * @throws IOException
      */
     public String getBuildOrderResult() throws IOException {
-        String result = null;
-        String buildOrderUrl = Constants.SERVER_DOMAIN + "/api/order/buildorder";
+        String result = "";
+        String buildOrderUrl = AppConfig.getInstance().getServer() + "/api/order/buildorder";
         int timeout = 30000;
         Map param = new HashMap<String, String>();
         param.put("securityKey", SecurityKey.getKey());
@@ -304,7 +307,7 @@ public class BuildOrderTask extends AsyncTask<String, Integer, Boolean> {
         if (itemOrderModel.getItemPromotion() != null) {
             TextView promotionTextView = (TextView) confirmOrdcerLayoutView.findViewById(R.id.confirm_order_promotion);
             String promotionPrice = itemOrderModel.getItemPromotion().getQuark();
-            if (promotionPrice == null || "".equals(promotionPrice)) {
+            if (promotionPrice == null || promotionPrice == "") {
                 promotionPrice = "0.00";
             }
             if (promotionPrice.startsWith("-")) {
